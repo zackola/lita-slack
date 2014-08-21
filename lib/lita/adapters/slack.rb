@@ -1,18 +1,22 @@
 require 'lita'
 require 'faraday'
 require 'json'
+require 'slackr'
 
 module Lita
 	module Adapters
 		class Slack < Adapter
 			# Required Lita config keys (via lita_config.rb)
 			require_configs :incoming_token, :team_domain
+      attr_accessor :client
 
 			# Adapter main run loop
 			def run
 				log.debug 'Slack::run started'
-				sleep
-				rescue Interrupt
+        @client = Slackr.connect(config.team_domain, config.incoming_token, 
+          {"channel" => config.channel, "username" => config.username})
+        log.debug "@client #{@client}"
+			rescue Interrupt
 				shut_down
 			end
 
